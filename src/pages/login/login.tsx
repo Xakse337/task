@@ -13,7 +13,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [loginUser, { isLoading }] = useLoginMutation();
+  const [loginUser] = useLoginMutation();
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();

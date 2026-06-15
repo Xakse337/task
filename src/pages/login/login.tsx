@@ -9,6 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -25,6 +26,7 @@ function LoginPage() {
           setLogin({
             token: response.token,
             email: response.user.email,
+            rememberMe: rememberMe,
           })
         );
       }
@@ -73,6 +75,21 @@ function LoginPage() {
             login
           </Button>
         </form>
+
+        <div className="flex items-center space-x-2 py-1">
+          <input
+            type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 cursor-pointer"
+          />
+          <label
+            htmlFor="remember"
+            className="text-xs font-medium text-slate-600 cursor-pointer select-none"
+          >
+            Remember me
+          </label>
+        </div>
 
         <div className="text-center mt-6 text-sm text-slate-600">
           Don't have an account?

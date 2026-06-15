@@ -21,15 +21,21 @@ const authSlice = createSlice({
   reducers: {
     setLogin: (
       state,
-      action: PayloadAction<{ token: string; email: string }>
+      action: PayloadAction<{
+        token: string;
+        email: string;
+        rememberMe: boolean;
+      }>
     ) => {
-      const { token, email } = action.payload;
+      const { token, email, rememberMe } = action.payload;
       state.isLogged = true;
-      state.email = action.payload.email;
+      state.email = email;
       state.token = token;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("email", email);
+      if (rememberMe) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("email", email);
+      }
     },
     setLogout: (state) => {
       state.isLogged = false;

@@ -13,6 +13,7 @@ import { useState } from "react";
 import { UserRow } from "@/components/userComponent";
 import { useUserSort } from "@/hooks/useUserSort";
 import { TableHeader } from "./tableHeader";
+import { Toast } from "@/components/toast";
 
 function DashboardPage() {
   const dispatch = useDispatch();
@@ -24,6 +25,14 @@ function DashboardPage() {
   const [blockUsers, { isLoading: isBlocking }] = useBlockUsersMutation();
   const [unblockUsers, { isLoading: isUnblocking }] = useUnblockUsersMutation();
   const [deleteUsers, { isLoading: isDeleting }] = useDeleteUsersMutation();
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isToastVisible, setIsToastVisible] = useState(false);
+
+  const showError = (message: string) => {
+    setErrorMessage(message);
+    setIsToastVisible(true);
+  };
 
   const checkSelfAction = (ids: number[]) => {
     if (currentUserId && ids.includes(currentUserId)) {
@@ -38,7 +47,7 @@ function DashboardPage() {
       checkSelfAction(selectedIds);
       setSelectedIds([]);
     } catch (err) {
-      console.error("Failed to block users:", err);
+      showError(err?.data?.error || "Failed to block selected users.");
     }
   };
 
@@ -48,20 +57,24 @@ function DashboardPage() {
       await unblockUsers({ ids: selectedIds }).unwrap();
       setSelectedIds([]);
     } catch (err) {
-      console.error("Failed to unblock users:", err);
+      showError(err?.data?.error || "Failed to unblock selected users.");
     }
   };
 
   const handleValuesDelete = async () => {
-    if (selectedIds.length === 0) return;
-    if (!confirm("Are you sure you want to delete selected users?")) return;
+    if (selectedIds.length === 0) {
+      return;
+    }
+    if (!confirm("Are you sure you want to delete selected users?")) {
+      return;
+    }
 
     try {
       await deleteUsers({ ids: selectedIds }).unwrap();
       checkSelfAction(selectedIds);
       setSelectedIds([]);
     } catch (err) {
-      console.error("Failed to delete users:", err);
+      showError(err?.data?.error || "Failed to delete selected users.");
     }
   };
 
@@ -209,6 +222,11 @@ function DashboardPage() {
           )}
         </div>
       </main>
+      <Toast
+        message={errorMessage}
+        isVisible={isToastVisible}
+        onClose={() => setIsToastVisible(false)}
+      />
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { Toast } from "@/components/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRegisterMutation } from "@/store/slices/apiSlice";
@@ -11,6 +12,14 @@ function RegistrationPage() {
 
   const [registerUser, { isLoading }] = useRegisterMutation();
 
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isToastVisible, setIsToastVisible] = useState(false);
+
+  const showError = (message: string) => {
+    setErrorMessage(message);
+    setIsToastVisible(true);
+  };
+
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
@@ -21,7 +30,7 @@ function RegistrationPage() {
       setPassword("");
       navigate("/");
     } catch (err) {
-      console.error("reg error:", err);
+      showError(err?.data?.error || "Failed to registration.");
     }
   };
 
@@ -74,6 +83,11 @@ function RegistrationPage() {
           </Link>
         </div>
       </div>
+      <Toast
+        message={errorMessage}
+        isVisible={isToastVisible}
+        onClose={() => setIsToastVisible(false)}
+      />
     </div>
   );
 }

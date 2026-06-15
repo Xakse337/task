@@ -1,3 +1,4 @@
+import { Toast } from "@/components/toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLoginMutation } from "@/store/slices/apiSlice";
@@ -12,6 +13,14 @@ function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isToastVisible, setIsToastVisible] = useState(false);
+
+  const showError = (message: string) => {
+    setErrorMessage(message);
+    setIsToastVisible(true);
+  };
 
   const [loginUser] = useLoginMutation();
 
@@ -34,7 +43,7 @@ function LoginPage() {
 
       navigate("/dashboard");
     } catch (err) {
-      console.error("reg error:", err);
+      showError(err?.data?.error || "Failed to login.");
     }
   };
 
@@ -102,6 +111,11 @@ function LoginPage() {
           </Link>
         </div>
       </div>
+      <Toast
+        message={errorMessage}
+        isVisible={isToastVisible}
+        onClose={() => setIsToastVisible(false)}
+      />
     </div>
   );
 }

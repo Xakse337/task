@@ -3,7 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setLogout } from "@/store/slices/authSlice";
 import type { RootState } from "@/store/store";
-import { useGetUsersQuery } from "@/store/slices/apiSlice";
+import {
+  useBlockUsersMutation,
+  useDeleteUsersMutation,
+  useGetUsersQuery,
+  useUnblockUsersMutation,
+} from "@/store/slices/apiSlice";
 import { useState } from "react";
 import { UserRow } from "@/components/userComponent";
 
@@ -12,6 +17,51 @@ function DashboardPage() {
   const navigate = useNavigate();
 
   const currentEmail = useSelector((state: RootState) => state.auth.email);
+  const currentUserId = useSelector((state: RootState) => state.auth.id);
+
+  const [blockUsers, { isLoading: isBlocking }] = useBlockUsersMutation();
+  const [unblockUsers, { isLoading: isUnblocking }] = useUnblockUsersMutation();
+  const [deleteUsers, { isLoading: isDeleting }] = useDeleteUsersMutation();
+
+  const checkSelfAction = (ids: number[]) => {
+    if (currentUserId && ids.includes(currentUserId)) {
+      handleLogout();
+    }
+  };
+
+  const handleBlock = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await blockUsers({ ids: selectedIds }).unwrap();
+      checkSelfAction(selectedIds);
+      setSelectedIds([]);
+    } catch (err) {
+      console.error("Failed to block users:", err);
+    }
+  };
+
+  const handleUnblock = async () => {
+    if (selectedIds.length === 0) return;
+    try {
+      await unblockUsers({ ids: selectedIds }).unwrap();
+      setSelectedIds([]);
+    } catch (err) {
+      console.error("Failed to unblock users:", err);
+    }
+  };
+
+  const handleValuesDelete = async () => {
+    if (selectedIds.length === 0) return;
+    if (!confirm("Are you sure you want to delete selected users?")) return;
+
+    try {
+      await deleteUsers({ ids: selectedIds }).unwrap();
+      checkSelfAction(selectedIds);
+      setSelectedIds([]);
+    } catch (err) {
+      console.error("Failed to delete users:", err);
+    }
+  };
 
   const { data: users = [], isLoading, isError, refetch } = useGetUsersQuery();
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -110,23 +160,28 @@ function DashboardPage() {
             <Button
               variant="default"
               size="sm"
-              disabled={selectedIds.length === 0}
+              onClick={handleBlock}
+              disabled={selectedIds.length === 0 || isBlocking}
             >
-              Block
+              {isBlocking ? "Blocking..." : "Block"}
             </Button>
+
             <Button
               variant="secondary"
               size="sm"
-              disabled={selectedIds.length === 0}
+              onClick={handleUnblock}
+              disabled={selectedIds.length === 0 || isUnblocking}
             >
-              Unblock
+              {isUnblocking ? "Unblocking..." : "Unblock"}
             </Button>
+
             <Button
               variant="destructive"
               size="sm"
-              disabled={selectedIds.length === 0}
+              onClick={handleValuesDelete}
+              disabled={selectedIds.length === 0 || isDeleting}
             >
-              Delete
+              {isDeleting ? "Deleting..." : "Delete"}
             </Button>
 
             <Button

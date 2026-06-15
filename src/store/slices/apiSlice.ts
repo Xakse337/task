@@ -37,8 +37,38 @@ export const apiSlice = createApi({
       query: () => "/users",
       providesTags: ["Users"],
     }),
+    blockUsers: builder.mutation<void, { ids: number[] }>({
+      query: (body) => ({
+        url: "/users/block",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Users"],
+    }),
+    unblockUsers: builder.mutation<void, { ids: number[] }>({
+      query: (body) => ({
+        url: "/users/unblock",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Users"],
+    }),
+    deleteUsers: builder.mutation<void, { ids: number[] }>({
+      query: (body) => ({
+        url: "/users/delete",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Users"],
+    }),
   }),
 });
 
-export const { useRegisterMutation, useLoginMutation, useGetUsersQuery } =
-  apiSlice;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useGetUsersQuery,
+  useBlockUsersMutation,
+  useUnblockUsersMutation,
+  useDeleteUsersMutation,
+} = apiSlice;

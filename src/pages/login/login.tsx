@@ -26,6 +26,7 @@ function LoginPage() {
           setLogin({
             token: response.token,
             email: response.user.email,
+            id: response.user.id,
             rememberMe: rememberMe,
           })
         );

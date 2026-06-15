@@ -29,7 +29,7 @@ function RegistrationPage() {
       setEmail("");
       setPassword("");
       navigate("/");
-    } catch (err) {
+    } catch (err: any) {
       showError(err?.data?.error || "Failed to registration.");
     }
   };

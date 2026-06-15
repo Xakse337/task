@@ -42,7 +42,7 @@ function LoginPage() {
       }
 
       navigate("/dashboard");
-    } catch (err) {
+    } catch (err: any) {
       showError(err?.data?.error || "Failed to login.");
     }
   };

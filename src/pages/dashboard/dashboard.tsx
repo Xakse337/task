@@ -46,7 +46,7 @@ function DashboardPage() {
       await blockUsers({ ids: selectedIds }).unwrap();
       checkSelfAction(selectedIds);
       setSelectedIds([]);
-    } catch (err) {
+    } catch (err: any) {
       showError(err?.data?.error || "Failed to block selected users.");
     }
   };
@@ -56,7 +56,7 @@ function DashboardPage() {
     try {
       await unblockUsers({ ids: selectedIds }).unwrap();
       setSelectedIds([]);
-    } catch (err) {
+    } catch (err: any) {
       showError(err?.data?.error || "Failed to unblock selected users.");
     }
   };
@@ -73,7 +73,7 @@ function DashboardPage() {
       await deleteUsers({ ids: selectedIds }).unwrap();
       checkSelfAction(selectedIds);
       setSelectedIds([]);
-    } catch (err) {
+    } catch (err: any) {
       showError(err?.data?.error || "Failed to delete selected users.");
     }
   };

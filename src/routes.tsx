@@ -17,7 +17,7 @@ export const router = createBrowserRouter([
     element: <Navigate to="/login" replace />,
   },
   {
-    path: "/Dashboard",
+    path: "/dashboard",
     element: <DashboardPage />,
   },
 ]);

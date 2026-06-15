@@ -1,14 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useRegisterMutation } from "@/store/slices/apiSlice";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function RegistrationPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const [registerUser, { isLoading }] = useRegisterMutation();
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
+
+    try {
+      await registerUser({ email, password }).unwrap();
+
+      setEmail("");
+      setPassword("");
+      navigate("/");
+    } catch (err) {
+      console.error("reg error:", err);
+    }
   };
 
   return (
@@ -45,8 +59,8 @@ function RegistrationPage() {
             />
           </div>
 
-          <Button type="submit" className="w-full mt-2">
-            Sign Up
+          <Button type="submit" className="w-full mt-2" disabled={isLoading}>
+            {isLoading ? "Signing Up..." : "Sign Up"}
           </Button>
         </form>
 

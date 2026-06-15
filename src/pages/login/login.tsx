@@ -1,14 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useLoginMutation } from "@/store/slices/apiSlice";
+import { setLogin } from "@/store/slices/authSlice";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const [loginUser, { isLoading }] = useLoginMutation();
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
+
+    try {
+      const response = await loginUser({ email, password }).unwrap();
+
+      if (response && response.token) {
+        dispatch(
+          setLogin({
+            token: response.token,
+            email: response.user.email,
+          })
+        );
+      }
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("reg error:", err);
+    }
   };
 
   return (

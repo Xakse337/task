@@ -11,6 +11,8 @@ import {
 } from "@/store/slices/apiSlice";
 import { useState } from "react";
 import { UserRow } from "@/components/userComponent";
+import { useUserSort } from "@/hooks/useUserSort";
+import { TableHeader } from "./tableHeader";
 
 function DashboardPage() {
   const dispatch = useDispatch();
@@ -65,44 +67,8 @@ function DashboardPage() {
 
   const { data: users = [], isLoading, isError, refetch } = useGetUsersQuery();
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [sortField, setSortField] = useState<
-    "id" | "email" | "status" | "lastLoginAt"
-  >("id");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
-  const handleSort = (field: "id" | "email" | "status" | "lastLoginAt") => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-  };
-
-  const sortedUsers = [...users].sort((a, b) => {
-    let valA = a[sortField];
-    let valB = b[sortField];
-
-    if (sortField === "lastLoginAt") {
-      valA = valA ? new Date(valA).getTime() : 0;
-      valB = valB ? new Date(valB).getTime() : 0;
-    }
-
-    if (valA === null || valA === undefined) {
-      return 1;
-    }
-    if (valB === null || valB === undefined) {
-      return -1;
-    }
-
-    if (valA < valB) {
-      return sortOrder === "asc" ? -1 : 1;
-    }
-    if (valA > valB) {
-      return sortOrder === "asc" ? 1 : -1;
-    }
-    return 0;
-  });
+  const { sortedUsers, sortField, sortOrder, handleSort } = useUserSort(users);
 
   const handleLogout = () => {
     dispatch(setLogout());
@@ -211,51 +177,15 @@ function DashboardPage() {
             </div>
           ) : (
             <table className="w-full text-left border-collapse">
-              <thead className="bg-slate-100 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                <tr>
-                  <th className="p-4 w-12 text-center">
-                    <input
-                      type="checkbox"
-                      checked={
-                        users.length > 0 && selectedIds.length === users.length
-                      }
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="h-4 w-4 rounded border-slate-300 text-slate-950 focus:ring-slate-950 cursor-pointer"
-                    />
-                  </th>
-
-                  <th
-                    className="p-4 cursor-pointer select-none hover:bg-slate-200 transition-colors"
-                    onClick={() => handleSort("id")}
-                  >
-                    ID {sortField === "id" && (sortOrder === "asc" ? "▲" : "▼")}
-                  </th>
-
-                  <th
-                    className="p-4 cursor-pointer select-none hover:bg-slate-200 transition-colors"
-                    onClick={() => handleSort("email")}
-                  >
-                    Email{" "}
-                    {sortField === "email" && (sortOrder === "asc" ? "▲" : "▼")}
-                  </th>
-                  <th
-                    className="p-4 cursor-pointer select-none hover:bg-slate-200 transition-colors"
-                    onClick={() => handleSort("status")}
-                  >
-                    Status{" "}
-                    {sortField === "status" &&
-                      (sortOrder === "asc" ? "▲" : "▼")}
-                  </th>
-                  <th
-                    className="p-4 cursor-pointer select-none hover:bg-slate-200 transition-colors"
-                    onClick={() => handleSort("lastLoginAt")}
-                  >
-                    Last Login{" "}
-                    {sortField === "lastLoginAt" &&
-                      (sortOrder === "asc" ? "▲" : "▼")}
-                  </th>
-                </tr>
-              </thead>
+              <TableHeader
+                sortField={sortField}
+                sortOrder={sortOrder}
+                onSort={handleSort}
+                isAllSelected={
+                  users.length > 0 && selectedIds.length === users.length
+                }
+                onSelectAll={handleSelectAll}
+              />
 
               <tbody className="divide-y divide-slate-200 text-sm text-slate-700">
                 {sortedUsers.map((user) => (

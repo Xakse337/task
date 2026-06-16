@@ -6,6 +6,7 @@ import {
   type FetchArgs,
 } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../store";
+import { router } from "@/routes";
 
 const BaseQuery = fetchBaseQuery({
   baseUrl: "https://precious-dusk-a6e2c9.netlify.app/.netlify/functions/api",
@@ -27,7 +28,7 @@ export const baseQueryWith403check = async (
 
   if (result.error && result.error.status === 403) {
     localStorage.clear();
-    window.location.href = "/login";
+    router.navigate("/login", { replace: true });
   }
 
   return result;

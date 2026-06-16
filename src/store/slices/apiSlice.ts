@@ -26,9 +26,6 @@ export const baseQueryWith403check = async (
   const result = await BaseQuery(arguments_, api, extraOptions);
 
   if (result.error && result.error.status === 403) {
-    const errorData = result.error.data as { error?: string };
-    alert(errorData?.error || "access deny");
-
     localStorage.clear();
     window.location.href = "/login";
   }

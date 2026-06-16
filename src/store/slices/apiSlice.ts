@@ -1,21 +1,44 @@
 import type { User } from "@/types/user";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  createApi,
+  fetchBaseQuery,
+  type BaseQueryApi,
+  type FetchArgs,
+} from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../store";
+
+const BaseQuery = fetchBaseQuery({
+  baseUrl: "https://precious-dusk-a6e2c9.netlify.app/.netlify/functions/api",
+  prepareHeaders: (headers, { getState }) => {
+    const token = (getState() as RootState).auth.token;
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
+
+export const baseQueryWith403check = async (
+  arguments_: string | FetchArgs,
+  api: BaseQueryApi,
+  extraOptions: object
+) => {
+  const result = await BaseQuery(arguments_, api, extraOptions);
+
+  if (result.error && result.error.status === 403) {
+    const errorData = result.error.data as { error?: string };
+    alert(errorData?.error || "access deny");
+
+    localStorage.clear();
+    window.location.href = "/login";
+  }
+
+  return result;
+};
 
 export const apiSlice = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "https://precious-dusk-a6e2c9.netlify.app/.netlify/functions/api",
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth.token;
-
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWith403check,
   tagTypes: ["Users"],
   endpoints: (builder) => ({
     register: builder.mutation({

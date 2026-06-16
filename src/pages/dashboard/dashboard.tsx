@@ -98,7 +98,7 @@ function DashboardPage() {
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedIds(users.map((u) => u.displayId));
+      setSelectedIds(users.map((u) => u.id));
     } else {
       setSelectedIds([]);
     }
@@ -203,9 +203,9 @@ function DashboardPage() {
               <tbody className="divide-y divide-slate-200 text-sm text-slate-700">
                 {sortedUsers.map((user) => (
                   <UserRow
-                    key={user.displayId}
+                    key={user.id}
                     user={user}
-                    isSelected={selectedIds.includes(user.displayId)}
+                    isSelected={selectedIds.includes(user.id)}
                     onSelect={handleSelectUser}
                   />
                 ))}

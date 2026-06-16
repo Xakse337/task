@@ -1,5 +1,5 @@
 export interface User {
-  displayId: number;
+  id: number;
   email: string;
   status: "active" | "blocked";
   lastLoginAt: string | null;

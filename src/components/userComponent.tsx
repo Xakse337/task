@@ -27,12 +27,14 @@ export function UserRow({ user, isSelected, onSelect }: UserRowProps) {
         <input
           type="checkbox"
           checked={isSelected}
-          onChange={(e) => onSelect(user.id, e.target.checked)}
+          onChange={(e) => onSelect(user.displayId, e.target.checked)}
           className="h-4 w-4 rounded border-slate-300 text-slate-950 focus:ring-slate-950 cursor-pointer"
         />
       </td>
 
-      <td className="p-4 font-mono text-xs text-slate-500 w-20">#{user.id}</td>
+      <td className="p-4 font-mono text-xs text-slate-500 w-20">
+        #{user.displayId}
+      </td>
 
       <td className="p-4 font-medium text-slate-900">{user.email}</td>
 

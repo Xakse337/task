@@ -27,7 +27,14 @@ export const baseQueryWith403check = async (
   const result = await BaseQuery(arguments_, api, extraOptions);
 
   if (result.error && result.error.status === 403) {
-    localStorage.clear();
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.clear();
+    } catch (e) {
+      console.error("error:", e);
+    }
+
     router.navigate("/login", { replace: true });
   }
 

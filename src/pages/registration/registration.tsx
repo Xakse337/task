@@ -20,15 +20,26 @@ function RegistrationPage() {
     setIsToastVisible(true);
   };
 
+  const showNotification = (message: string) => {
+    setErrorMessage(message);
+    setIsToastVisible(true);
+  };
+
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
 
     try {
-      await registerUser({ email, password }).unwrap();
+      const response = await registerUser({ email, password }).unwrap();
+
+      showNotification(
+        response?.message || "Registration successful! Check your email."
+      );
 
       setEmail("");
       setPassword("");
-      navigate("/");
+      setTimeout(() => {
+        navigate("/login");
+      }, 2500);
     } catch (err: any) {
       showError(err?.data?.error || "Failed to registration.");
     }

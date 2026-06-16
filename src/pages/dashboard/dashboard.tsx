@@ -85,7 +85,7 @@ function DashboardPage() {
 
   const handleLogout = () => {
     dispatch(setLogout());
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
   const handleSelectUser = (id: number, checked: boolean) => {
